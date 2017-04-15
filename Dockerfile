@@ -316,3 +316,18 @@ RUN pip install --upgrade mpld3 && \
     rm -rf /root/.cache/pip/* && \
     # Required to display Altair charts in Jupyter notebook
     jupyter nbextension install --user --py vega
+
+RUN pip --no-cache-dir install jupyter
+RUN python -m ipykernel.kernelspec
+RUN python2 -m ipykernel.kernelspec --user
+RUN jupyter notebook --allow-root --generate-config -y
+
+COPY jupyter_notebook_config.py /root/.jupyter/
+
+# Jupyter has issues with being run directly: https://github.com/ipython/ipython/issues/7062
+COPY run_jupyter.sh /root/
+
+WORKDIR "/root/"
+RUN chmod +x run_jupyter.sh
+
+RUN jupyter nbextension enable --py --sys-prefix widgetsnbextension
